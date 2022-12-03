@@ -4,29 +4,28 @@ import os
 import credentials
 
 # Funcion para imprimir las diferentes entidades de un tweet
-def printtweetdata(n, ith_tweet,scraped_data):
-    d = {"# tweet extraido": n, "usuario": ith_tweet[0], "descripcion": ith_tweet[1], "ubicacion": ith_tweet[2],
-         "total tweet": ith_tweet[3], "hashtags usados": ith_tweet[4], "texto tweet": ith_tweet[5]}
+def printtweetdata(n, in_tweet, extracted_data):
+    d = {"# tweet extraido": n, "usuario": in_tweet[0], "descripcion": in_tweet[1], "ubicacion": in_tweet[2],
+         "total tweet": in_tweet[3], "hashtags usados": in_tweet[4], "texto tweet": in_tweet[5]}
     print(f"tweet extraido {n}:")
-    print(f"usuario: {ith_tweet[0]}")
-    print(f"description: {ith_tweet[1]}")
-    print(f"ubicacion: {ith_tweet[2]}")
-    print(f"total tweet: {ith_tweet[3]}")
-    print(f"hashtags usados: {ith_tweet[4]}")
-    print(f"texto tweet: {ith_tweet[5]}")
-    scraped_data.append(d)
+    print(f"usuario: {in_tweet[0]}")
+    print(f"description: {in_tweet[1]}")
+    print(f"ubicacion: {in_tweet[2]}")
+    print(f"total tweet: {in_tweet[3]}")
+    print(f"hashtags usados: {in_tweet[4]}")
+    print(f"texto tweet: {in_tweet[5]}")
+    extracted_data.append(d)
 
 #Almacenamiento en un archivo Json
-
-    if not os.path.isdir('output'):
-        os.mkdir('output')
-    with open(f'output/scraped_data.json', 'w') as outfile:
-        json.dump(scraped_data, outfile, indent=4)
+    if not os.path.isdir('datos'):
+        os.mkdir('datos')
+    with open(f'datos/datos_extraidos.json', 'w') as outfile:
+        json.dump(extracted_data, outfile, indent=4)
 
 
 # Función para extraer diferentes entidades de un tweet
-def scrape(words, numtweet, scraped_data):
-    tweets = tweepy.Cursor(api.search_tweets, q=words, lang="en", tweet_mode='extended').items(numtweet)
+def extraccion(words, numtweet, extracted_data):
+    tweets = tweepy.Cursor(api.search_tweets, q=words, lang="es", tweet_mode='extended').items(numtweet)
     list_tweets = [tweet for tweet in tweets]
     i = 1
     for tweet in list_tweets:
@@ -43,9 +42,9 @@ def scrape(words, numtweet, scraped_data):
         hashtext = list()
         for j in range(0, len(hashtags)):
             hashtext.append(hashtags[j]['text'])
-        ith_tweet = [usuario, description, ubicacion, totaltweet, hashtext,text]
+        in_tweet = [usuario, description, ubicacion, totaltweet, hashtext, text]
 
-        printtweetdata(i, ith_tweet, scraped_data)
+        printtweetdata(i, in_tweet, extracted_data)
         i = i + 1
 
 
@@ -57,16 +56,15 @@ if __name__ == '__main__':
 
     api = tweepy.API(auth)
 
-
     # Inicia ejecución del programa
     print("Digite el Hashtag: ")
     words = input()
 
     print("Digite el número de tweets que se van a extraer: ")
     numtweet = int(input())
-    scraped_data = []
+    extracted_data  = []
 
     print("Buscando twits...")
-    scrape(words, numtweet, scraped_data)
+    extraccion(words, numtweet, extracted_data)
 
     print('La extracción se ha completado.')
